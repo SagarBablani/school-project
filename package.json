@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "dev:api": "nodemon src/server.js",
+    "dev:api": "nodemon --watch src --ignore work --ignore dist src/server.js",
     "api": "node src/server.js",
     "start": "node src/server.js",
     "build": "vite build",
@@ -28,6 +28,7 @@
     "vite": "^6.0.7"
   },
   "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
     "nodemon": "^3.1.14"
   }
 }

@@ -1,0 +1,490 @@
+{
+  "schools": [
+    {
+      "id": "sch_e7794595-f718-47c7-9cf5-14fcc2812e0b",
+      "name": "Smoke Test School",
+      "policy": {
+        "start": "21:00",
+        "end": "07:00"
+      },
+      "createdAt": "2026-06-30T19:03:05.701Z"
+    },
+    {
+      "id": "sch_7d477abf-4e64-43e8-a642-6e06077c5fe5",
+      "name": "Northstar Public School",
+      "policy": {
+        "start": "21:00",
+        "end": "07:00"
+      },
+      "createdAt": "2026-06-30T19:50:45.194Z"
+    },
+    {
+      "id": "sch_9dfedb99-7e3f-4325-b2f1-3b4007377d55",
+      "name": "Northstar Public School",
+      "policy": {
+        "start": "21:00",
+        "end": "07:00"
+      },
+      "createdAt": "2026-06-30T19:52:57.927Z"
+    }
+  ],
+  "classes": [
+    {
+      "id": "cls_ede58ede-c6bf-4b66-9e9e-35a1cd27cacd",
+      "schoolId": "sch_7d477abf-4e64-43e8-a642-6e06077c5fe5",
+      "name": "Grade 6A",
+      "grade": "6"
+    },
+    {
+      "id": "cls_68f3f105-f255-405a-a901-6df85fb6e01e",
+      "schoolId": "sch_7d477abf-4e64-43e8-a642-6e06077c5fe5",
+      "name": "Grade 6B",
+      "grade": "6"
+    },
+    {
+      "id": "cls_18c9868e-3487-4972-b670-4a4ac8289d33",
+      "schoolId": "sch_9dfedb99-7e3f-4325-b2f1-3b4007377d55",
+      "name": "Grade 6A",
+      "grade": "6"
+    },
+    {
+      "id": "cls_9c037338-a005-48cf-95f4-f51b07776f31",
+      "schoolId": "sch_9dfedb99-7e3f-4325-b2f1-3b4007377d55",
+      "name": "Grade 6B",
+      "grade": "6"
+    }
+  ],
+  "users": [
+    {
+      "id": "usr_42bbf1b9-23dd-4a52-a1aa-f31227f9d987",
+      "schoolId": "sch_e7794595-f718-47c7-9cf5-14fcc2812e0b",
+      "role": "admin",
+      "name": "Admin User",
+      "email": "smoke@example.test",
+      "passwordHash": "95644d7d3f5982116dbfc933f4a9403c:c3991e5ae79848096cf3e696443fdf580cdfe82e645dee4b29aa1776f507f71f34ee56f8d6cb63f9b4ac7a8a26abc1a7e61afdf13aab09f94a21cb47ef34b996",
+      "classIds": [],
+      "studentIds": []
+    },
+    {
+      "id": "usr_2aa089da-43ff-4f71-ac11-b6e983b6f85d",
+      "schoolId": "sch_7d477abf-4e64-43e8-a642-6e06077c5fe5",
+      "role": "admin",
+      "name": "Asha Rao",
+      "email": "admin@northstar.test",
+      "passwordHash": "86fe56edb98f170b952a25287b5a4d75:1acb8ea34b2aa9ad5ade6e3976525dcd11157e1d57fcbe643d97db790e75606ef7907628af171bc99b2a4284f43dc6af33ed60059eaef9aa049f276cd857dd09",
+      "classIds": [],
+      "studentIds": []
+    },
+    {
+      "id": "usr_97a13c16-4444-46bd-a9b4-193191349237",
+      "schoolId": "sch_9dfedb99-7e3f-4325-b2f1-3b4007377d55",
+      "role": "admin",
+      "name": "Sagar",
+      "email": "sagar@northstar.test",
+      "passwordHash": "26b698eb69865536e72d19c88f499486:ee548f96e2a8d10afc38e02f52718cc99e0d1991df79682fc733f9a6cc822c8048f75b5af7458c7f2419b9bd155490356da2b5705030029595de177447e861f6",
+      "classIds": [],
+      "studentIds": []
+    }
+  ],
+  "teacherClasses": [],
+  "invites": [
+    {
+      "id": "inv_b6844b1b-5ce0-4315-8320-18c9fa6b74c7",
+      "code": "DO0J0A6C",
+      "schoolId": "sch_9dfedb99-7e3f-4325-b2f1-3b4007377d55",
+      "role": "teacher",
+      "classIds": [],
+      "studentIds": [],
+      "email": "teacher@northstar.test",
+      "name": "Meera Iyer",
+      "expiresAt": "2026-07-03T20:04:38.983Z",
+      "usedBy": null
+    },
+    {
+      "id": "inv_a67863cb-3612-49ae-a937-5494a8ee5a04",
+      "code": "CP2DJCFE",
+      "schoolId": "sch_9dfedb99-7e3f-4325-b2f1-3b4007377d55",
+      "role": "student",
+      "classIds": [],
+      "studentIds": [],
+      "email": "sam@northstar.test",
+      "name": "Sam",
+      "expiresAt": "2026-07-03T20:05:06.737Z",
+      "usedBy": null
+    },
+    {
+      "id": "inv_a004ddca-0ab4-4f08-9057-64a3939b0ee2",
+      "code": "WV67N3JL",
+      "schoolId": "sch_7d477abf-4e64-43e8-a642-6e06077c5fe5",
+      "role": "student",
+      "classIds": [
+        "cls_68f3f105-f255-405a-a901-6df85fb6e01e"
+      ],
+      "studentIds": [],
+      "email": "varnu@northstar.test",
+      "name": "Varnu",
+      "expiresAt": "2026-07-03T20:10:46.778Z",
+      "usedBy": null
+    }
+  ],
+  "documents": [
+    {
+      "id": "doc_af06134f-d661-4c34-a445-19f01b7a8c72",
+      "schoolId": "sch_7d477abf-4e64-43e8-a642-6e06077c5fe5",
+      "actorId": "usr_2aa089da-43ff-4f71-ac11-b6e983b6f85d",
+      "type": "policy",
+      "originalName": "policy-paste.txt",
+      "text": "Title: Cell Structure Lab Reflection\nSubject: Biology\nClass: Grade 6A\nDue: 2026-07-08\nWrite a 300 word reflection and include one diagram.",
+      "parsed": {
+        "type": "policy",
+        "fields": {
+          "quietHours": null,
+          "teacherApprovalRequired": false
+        },
+        "ambiguityNotes": [
+          "Missing quiet hours."
+        ],
+        "confidence": 0.62,
+        "needsClarification": true,
+        "unsafe": false
+      },
+      "approvalState": "needs_review",
+      "createdAt": "2026-06-30T20:11:26.341Z"
+    },
+    {
+      "id": "doc_b6cc3a83-4ed6-4f0c-a886-1f14ec536bd3",
+      "schoolId": "sch_7d477abf-4e64-43e8-a642-6e06077c5fe5",
+      "actorId": "usr_2aa089da-43ff-4f71-ac11-b6e983b6f85d",
+      "type": "roster",
+      "originalName": "roster-paste.txt",
+      "text": "Title: Cell Structure Lab Reflection\nSubject: Biology\nClass: Grade 6A\nDue: 2026-07-08\nWrite a 300 word reflection and include one diagram.",
+      "parsed": {
+        "type": "roster",
+        "fields": {
+          "rows": []
+        },
+        "ambiguityNotes": [
+          "Row 1 is missing student, class, or guardian contact.",
+          "Row 2 is missing student, class, or guardian contact.",
+          "Row 3 is missing student, class, or guardian contact.",
+          "Row 4 is missing student, class, or guardian contact.",
+          "Row 5 is missing student, class, or guardian contact."
+        ],
+        "confidence": 0.25,
+        "needsClarification": true,
+        "unsafe": false
+      },
+      "approvalState": "needs_review",
+      "createdAt": "2026-06-30T20:11:08.043Z"
+    },
+    {
+      "id": "doc_6b126105-6a25-4218-aed3-5f8ab691fb32",
+      "schoolId": "sch_9dfedb99-7e3f-4325-b2f1-3b4007377d55",
+      "actorId": "usr_97a13c16-4444-46bd-a9b4-193191349237",
+      "type": "assignment",
+      "originalName": "assignment-paste.txt",
+      "text": "Title: Cell Structure Lab Reflection\nSubject: Biology\nClass: Grade 6A\nDue: 2026-07-08\nWrite a 300 word reflection and include one diagram.",
+      "parsed": {
+        "type": "assignment",
+        "fields": {
+          "title": "Cell Structure Lab Reflection",
+          "subject": "Biology",
+          "dueDate": "2026-07-08T00:00:00.000Z",
+          "targetRaw": "Grade 6A",
+          "instructions": "Write a 300 word reflection and include one diagram.",
+          "classIds": [],
+          "targetStudentIds": []
+        },
+        "ambiguityNotes": [
+          "Target did not match known classes or students: Grade 6A"
+        ],
+        "confidence": 0.7999999999999999,
+        "needsClarification": true,
+        "unsafe": false
+      },
+      "approvalState": "approved",
+      "createdAt": "2026-06-30T20:03:21.877Z"
+    }
+  ],
+  "assignments": [],
+  "submissions": [],
+  "reminders": [],
+  "idempotencyKeys": [],
+  "auditEvents": [
+    {
+      "id": "evt_6b701e33-5600-44e1-941d-035bfd8eb8f0",
+      "at": "2026-06-30T20:12:25.405Z",
+      "correlationId": "corr_1782850345404_f7576c56",
+      "actorId": "usr_2aa089da-43ff-4f71-ac11-b6e983b6f85d",
+      "schoolId": "sch_7d477abf-4e64-43e8-a642-6e06077c5fe5",
+      "resourceType": "system",
+      "resourceId": null,
+      "action": "demo.seeded",
+      "outcome": "ok",
+      "details": {
+        "classes": 2
+      }
+    },
+    {
+      "id": "evt_ea833d87-10c8-438e-a2be-05edadb9bffa",
+      "at": "2026-06-30T20:11:26.345Z",
+      "correlationId": "corr_1782850286337_4d6eb484",
+      "actorId": "usr_2aa089da-43ff-4f71-ac11-b6e983b6f85d",
+      "schoolId": "sch_7d477abf-4e64-43e8-a642-6e06077c5fe5",
+      "resourceType": "document",
+      "resourceId": "doc_af06134f-d661-4c34-a445-19f01b7a8c72",
+      "action": "document.parsed",
+      "outcome": "ok",
+      "details": {
+        "type": "policy",
+        "confidence": 0.62,
+        "notes": [
+          "Missing quiet hours."
+        ]
+      }
+    },
+    {
+      "id": "evt_b7c8fcfb-3760-4dea-bff2-98724dcb1021",
+      "at": "2026-06-30T20:11:08.047Z",
+      "correlationId": "corr_1782850268040_b014661d",
+      "actorId": "usr_2aa089da-43ff-4f71-ac11-b6e983b6f85d",
+      "schoolId": "sch_7d477abf-4e64-43e8-a642-6e06077c5fe5",
+      "resourceType": "document",
+      "resourceId": "doc_b6cc3a83-4ed6-4f0c-a886-1f14ec536bd3",
+      "action": "document.parsed",
+      "outcome": "ok",
+      "details": {
+        "type": "roster",
+        "confidence": 0.25,
+        "notes": [
+          "Row 1 is missing student, class, or guardian contact.",
+          "Row 2 is missing student, class, or guardian contact.",
+          "Row 3 is missing student, class, or guardian contact.",
+          "Row 4 is missing student, class, or guardian contact.",
+          "Row 5 is missing student, class, or guardian contact."
+        ]
+      }
+    },
+    {
+      "id": "evt_8cab8503-3de4-4530-901f-d24bd0f49084",
+      "at": "2026-06-30T20:10:46.778Z",
+      "correlationId": "corr_1782850246774_c97020b4",
+      "actorId": "usr_2aa089da-43ff-4f71-ac11-b6e983b6f85d",
+      "schoolId": "sch_7d477abf-4e64-43e8-a642-6e06077c5fe5",
+      "resourceType": "invite",
+      "resourceId": "inv_a004ddca-0ab4-4f08-9057-64a3939b0ee2",
+      "action": "invite.created",
+      "outcome": "ok",
+      "details": {
+        "role": "student",
+        "code": "WV67N3JL"
+      }
+    },
+    {
+      "id": "evt_b4acc6e2-da99-46fd-b760-3eb0dbc35f45",
+      "at": "2026-06-30T20:10:03.648Z",
+      "correlationId": "corr_1782850203513_a4759d59",
+      "actorId": "usr_2aa089da-43ff-4f71-ac11-b6e983b6f85d",
+      "schoolId": "sch_7d477abf-4e64-43e8-a642-6e06077c5fe5",
+      "resourceType": "user",
+      "resourceId": "usr_2aa089da-43ff-4f71-ac11-b6e983b6f85d",
+      "action": "auth.login",
+      "outcome": "ok",
+      "details": {}
+    },
+    {
+      "id": "evt_7d2b798e-4bb5-472b-b470-d13edad3e930",
+      "at": "2026-06-30T20:06:28.591Z",
+      "correlationId": "corr_1782849988589_2610bb92",
+      "actorId": "usr_97a13c16-4444-46bd-a9b4-193191349237",
+      "schoolId": "sch_9dfedb99-7e3f-4325-b2f1-3b4007377d55",
+      "resourceType": "document",
+      "resourceId": "doc_6b126105-6a25-4218-aed3-5f8ab691fb32",
+      "action": "document.approved",
+      "outcome": "ok",
+      "details": {}
+    },
+    {
+      "id": "evt_22f0e99e-acc2-487f-b4cd-c0d043ad48ca",
+      "at": "2026-06-30T20:05:59.940Z",
+      "correlationId": "corr_1782849959939_6a9f7971",
+      "actorId": "usr_97a13c16-4444-46bd-a9b4-193191349237",
+      "schoolId": "sch_9dfedb99-7e3f-4325-b2f1-3b4007377d55",
+      "resourceType": "system",
+      "resourceId": null,
+      "action": "demo.seeded",
+      "outcome": "ok",
+      "details": {
+        "classes": 2
+      }
+    },
+    {
+      "id": "evt_9e0974f4-20dd-4111-b5e7-344ce5063b95",
+      "at": "2026-06-30T20:05:27.007Z",
+      "correlationId": "corr_1782849927003_33f24c6c",
+      "actorId": "usr_97a13c16-4444-46bd-a9b4-193191349237",
+      "schoolId": "sch_9dfedb99-7e3f-4325-b2f1-3b4007377d55",
+      "resourceType": "class",
+      "resourceId": "cls_18c9868e-3487-4972-b670-4a4ac8289d33",
+      "action": "class.created",
+      "outcome": "ok",
+      "details": {
+        "name": "Grade 6A",
+        "grade": "6"
+      }
+    },
+    {
+      "id": "evt_0631b902-0058-4038-8514-86e2e1a123da",
+      "at": "2026-06-30T20:05:06.737Z",
+      "correlationId": "corr_1782849906736_3c2a1b71",
+      "actorId": "usr_97a13c16-4444-46bd-a9b4-193191349237",
+      "schoolId": "sch_9dfedb99-7e3f-4325-b2f1-3b4007377d55",
+      "resourceType": "invite",
+      "resourceId": "inv_a67863cb-3612-49ae-a937-5494a8ee5a04",
+      "action": "invite.created",
+      "outcome": "ok",
+      "details": {
+        "role": "student",
+        "code": "CP2DJCFE"
+      }
+    },
+    {
+      "id": "evt_0379911d-1c77-49f3-b0f3-4753a95903c2",
+      "at": "2026-06-30T20:04:38.983Z",
+      "correlationId": "corr_1782849878978_5e24eded",
+      "actorId": "usr_97a13c16-4444-46bd-a9b4-193191349237",
+      "schoolId": "sch_9dfedb99-7e3f-4325-b2f1-3b4007377d55",
+      "resourceType": "invite",
+      "resourceId": "inv_b6844b1b-5ce0-4315-8320-18c9fa6b74c7",
+      "action": "invite.created",
+      "outcome": "ok",
+      "details": {
+        "role": "teacher",
+        "code": "DO0J0A6C"
+      }
+    },
+    {
+      "id": "evt_f7430c9f-98b4-4ce1-90bf-777757c5dfed",
+      "at": "2026-06-30T20:04:13.093Z",
+      "correlationId": "corr_1782849853090_4d548496",
+      "actorId": "usr_97a13c16-4444-46bd-a9b4-193191349237",
+      "schoolId": "sch_9dfedb99-7e3f-4325-b2f1-3b4007377d55",
+      "resourceType": "message",
+      "resourceId": null,
+      "action": "intent.blocked_help_request",
+      "outcome": "ok",
+      "details": {
+        "confidence": 0.84
+      }
+    },
+    {
+      "id": "evt_bc8fe532-8d64-4d74-99cc-0274df9b2c4b",
+      "at": "2026-06-30T20:04:03.166Z",
+      "correlationId": "corr_1782849843162_0d5e006d",
+      "actorId": "usr_97a13c16-4444-46bd-a9b4-193191349237",
+      "schoolId": "sch_9dfedb99-7e3f-4325-b2f1-3b4007377d55",
+      "resourceType": "message",
+      "resourceId": null,
+      "action": "intent.blocked_help_request",
+      "outcome": "ok",
+      "details": {
+        "confidence": 0.84
+      }
+    },
+    {
+      "id": "evt_3658fa87-39e5-40bb-b1ed-aeceafc4a54c",
+      "at": "2026-06-30T20:03:21.897Z",
+      "correlationId": "corr_1782849801797_b17c8a90",
+      "actorId": "usr_97a13c16-4444-46bd-a9b4-193191349237",
+      "schoolId": "sch_9dfedb99-7e3f-4325-b2f1-3b4007377d55",
+      "resourceType": "document",
+      "resourceId": "doc_6b126105-6a25-4218-aed3-5f8ab691fb32",
+      "action": "document.parsed",
+      "outcome": "ok",
+      "details": {
+        "type": "assignment",
+        "confidence": 0.7999999999999999,
+        "notes": [
+          "Target did not match known classes or students: Grade 6A"
+        ]
+      }
+    },
+    {
+      "id": "evt_50b5dec5-5819-46a3-92eb-99b6c8037b73",
+      "at": "2026-06-30T19:53:22.391Z",
+      "correlationId": "corr_1782849202270_2bf69c43",
+      "actorId": "usr_97a13c16-4444-46bd-a9b4-193191349237",
+      "schoolId": "sch_9dfedb99-7e3f-4325-b2f1-3b4007377d55",
+      "resourceType": "user",
+      "resourceId": "usr_97a13c16-4444-46bd-a9b4-193191349237",
+      "action": "auth.login",
+      "outcome": "ok",
+      "details": {}
+    },
+    {
+      "id": "evt_77d5a5ae-88dd-4094-8a23-73e27e6139ba",
+      "at": "2026-06-30T19:52:58.062Z",
+      "correlationId": "corr_1782849177927_e197caf9",
+      "actorId": "usr_97a13c16-4444-46bd-a9b4-193191349237",
+      "schoolId": "sch_9dfedb99-7e3f-4325-b2f1-3b4007377d55",
+      "resourceType": "school",
+      "resourceId": "sch_9dfedb99-7e3f-4325-b2f1-3b4007377d55",
+      "action": "school.registered",
+      "outcome": "ok",
+      "details": {}
+    },
+    {
+      "id": "evt_eaaa1cf1-01c5-41fb-8e61-18e95ed59fa7",
+      "at": "2026-06-30T19:52:24.977Z",
+      "correlationId": "corr_1782849144835_68350796",
+      "actorId": "usr_2aa089da-43ff-4f71-ac11-b6e983b6f85d",
+      "schoolId": "sch_7d477abf-4e64-43e8-a642-6e06077c5fe5",
+      "resourceType": "user",
+      "resourceId": "usr_2aa089da-43ff-4f71-ac11-b6e983b6f85d",
+      "action": "auth.login",
+      "outcome": "ok",
+      "details": {}
+    },
+    {
+      "id": "evt_5e315794-a7f9-4b27-bfc5-b7f9b09afd8d",
+      "at": "2026-06-30T19:51:33.556Z",
+      "correlationId": "corr_1782849093553_337b0a0a",
+      "actorId": "usr_2aa089da-43ff-4f71-ac11-b6e983b6f85d",
+      "schoolId": "sch_7d477abf-4e64-43e8-a642-6e06077c5fe5",
+      "resourceType": "system",
+      "resourceId": null,
+      "action": "demo.seeded",
+      "outcome": "ok",
+      "details": {
+        "classes": 2
+      }
+    },
+    {
+      "id": "evt_091f9037-4302-4c01-9165-dbaef9c8be6d",
+      "at": "2026-06-30T19:50:45.352Z",
+      "correlationId": "corr_1782849045175_64ad24b8",
+      "actorId": "usr_2aa089da-43ff-4f71-ac11-b6e983b6f85d",
+      "schoolId": "sch_7d477abf-4e64-43e8-a642-6e06077c5fe5",
+      "resourceType": "school",
+      "resourceId": "sch_7d477abf-4e64-43e8-a642-6e06077c5fe5",
+      "action": "school.registered",
+      "outcome": "ok",
+      "details": {}
+    },
+    {
+      "id": "evt_e076364e-c8d4-481c-bbd0-0debafd76363",
+      "at": "2026-06-30T19:03:05.749Z",
+      "correlationId": "corr_1782846185698_2e261848",
+      "actorId": "usr_42bbf1b9-23dd-4a52-a1aa-f31227f9d987",
+      "schoolId": "sch_e7794595-f718-47c7-9cf5-14fcc2812e0b",
+      "resourceType": "school",
+      "resourceId": "sch_e7794595-f718-47c7-9cf5-14fcc2812e0b",
+      "action": "school.registered",
+      "outcome": "ok",
+      "details": {}
+    }
+  ],
+  "scheduler": {
+    "lastRunAt": "2026-06-30T20:59:35.873Z"
+  }
+}

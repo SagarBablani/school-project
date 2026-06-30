@@ -1,6 +1,19 @@
 import mammoth from "mammoth";
-import * as pdfParse from "pdf-parse";
 import { createWorker } from "tesseract.js";
+import * as canvas from "@napi-rs/canvas";
+
+function ensurePdfDomGlobals() {
+  if (typeof globalThis.DOMMatrix === "undefined") globalThis.DOMMatrix = canvas.DOMMatrix;
+  if (typeof globalThis.ImageData === "undefined") globalThis.ImageData = canvas.ImageData;
+  if (typeof globalThis.Path2D === "undefined") globalThis.Path2D = canvas.Path2D;
+  if (typeof globalThis.Canvas === "undefined") globalThis.Canvas = canvas.Canvas;
+}
+
+async function loadPdfParse() {
+  ensurePdfDomGlobals();
+  const module = await import("pdf-parse");
+  return module.default || module;
+}
 
 const UNSAFE_PATTERNS = [
   /ignore (all )?(previous|prior|system) instructions/i,
@@ -21,8 +34,8 @@ export async function extractTextFromFile(file) {
 
   try {
     if (mimetype === "application/pdf" || ext === "pdf") {
-      const parseFn = pdfParse.default || pdfParse;
-      const result = await parseFn(buffer);
+      const pdfParse = await loadPdfParse();
+      const result = await pdfParse(buffer);
       return String(result.text || "").trim();
     }
     if (mimetype.includes("wordprocessingml") || ext === "docx") {

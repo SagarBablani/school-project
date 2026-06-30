@@ -8,6 +8,9 @@ A focused take-home implementation for the SIM senior engineering assignment. It
 - Express API with separate models, controllers, middleware, and routes
 - JSON file persistence for a demo-friendly local database
 - Server-sent events for live dashboard updates
+- Deterministic document parsing with file upload support for `.txt`, `.pdf`, `.docx`, and images
+- Idempotent webhook intake for Telegram/WhatsApp-style chat bindings
+- Scheduler with durable run state and optional cron scheduling
 - Node test runner for auth, parser, and reminder coverage
 
 ## Run Locally
@@ -34,7 +37,7 @@ Open `http://127.0.0.1:4000`.
 1. Register `Northstar Public School` as an admin.
 2. Click `Seed classes` or create `Grade 6A` and `Grade 6B`.
 3. Create a teacher invite and join from another browser/session using the invite code.
-4. Upload a roster document. Example:
+4. Upload a roster document or attach a file. Example:
 
 ```text
 student,class,guardian
@@ -45,7 +48,7 @@ Kabir Mehta,Grade 6A,kabir.parent@example.com
 
 The duplicate row is flagged for review. Approving imports demo student and guardian users with password `demo1234`.
 
-5. Upload an assignment brief. Example:
+5. Upload an assignment brief via text or file. Example:
 
 ```text
 Title: Cell Structure Lab Reflection
@@ -84,8 +87,8 @@ The parser is deterministic for the exercise and treats extracted values as prop
 
 ## Known Limitations
 
-- Chat is simulated in the web app instead of a real Telegram or WhatsApp bot.
-- Uploaded files are represented as pasted text; the server writes the original text to `work/uploads`.
+- Chat is simulated in the web app, but the API includes webhook endpoints for Telegram and WhatsApp-style envelope handling with binding and idempotency.
+- Uploaded documents are accepted as `.txt`, `.pdf`, `.docx`, and supported image formats; the server stores the original file and extracts text via parser and OCR.
 - JSON persistence is intentionally simple; a production version should use Postgres with transactions and unique constraints.
 - The parser is rule-based. A production version would use a validated structured LLM output behind the same approval boundary.
 - SSE is enough for the live dashboard demo; a larger deployment may prefer a message bus and WebSocket gateway.
@@ -96,4 +99,10 @@ The parser is deterministic for the exercise and treats extracted values as prop
 npm test
 ```
 
-Coverage focuses on the highest-risk boundaries: auth scoping, prompt-injection fallback, parser ambiguity, reminder policy, and reminder idempotency.
+Coverage focuses on the highest-risk boundaries: auth scoping, prompt-injection fallback, parser ambiguity, reminder policy, webhook idempotency, and scheduler state.
+
+## Advanced notes
+
+- The scheduler supports an optional `SCHEDULER_CRON` environment variable for cron-style execution.
+- Uploaded files are persisted under `work/uploads` and text is extracted for review before approval.
+- Chat webhooks are designed to be safe on duplicate delivery through idempotency keys.
