@@ -248,9 +248,12 @@ function Documents({ snapshot, refresh }) {
             <option value="roster">Class roster</option>
             <option value="policy">School policy</option>
           </select>
-          <input type="file" accept=".txt,.pdf,.docx,.png,.jpg,.jpeg,.tiff,.bmp,.gif" onChange={(e) => setFile(e.target.files[0] || null)} />
+          <label className="file-input-wrapper">
+            <FileText size={16} /> Choose file
+            <input type="file" accept=".txt,.pdf,.docx,.png,.jpg,.jpeg,.tiff,.bmp,.gif" onChange={(e) => setFile(e.target.files[0] || null)} />
+          </label>
           {!file && <textarea value={doc.text} onChange={(e) => setDoc({ ...doc, text: e.target.value })} />}
-          {file && <div className="file-preview">Selected file: {file.name}</div>}
+          {file && <div className="file-preview">📎 {file.name}</div>}
           <button><FileText size={16} /> Parse document</button>
         </form>
       </section>
