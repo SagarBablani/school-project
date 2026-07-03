@@ -1,0 +1,17 @@
+{
+  "schools": [],
+  "classes": [],
+  "users": [],
+  "teacherClasses": [],
+  "invites": [],
+  "documents": [],
+  "assignments": [],
+  "submissions": [],
+  "reminders": [],
+  "idempotencyKeys": [],
+  "chatBindings": [],
+  "scheduler": {
+    "lastRunAt": "2026-07-03T21:02:59.057Z"
+  },
+  "auditEvents": []
+}

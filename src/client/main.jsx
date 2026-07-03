@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { AlertTriangle, Bell, BookOpen, CheckCircle2, FileText, Lock, LogOut, MessageSquare, School, Send, Shield, Users } from "lucide-react";
+import { AlertTriangle, Bell, BookOpen, CheckCircle2, Eye, EyeOff, FileText, Lock, LogOut, MessageSquare, School, Send, Shield, Users } from "lucide-react";
 import "./styles.css";
 
 const emptyForm = { schoolName: "Northstar Public School", name: "Asha Rao", email: "admin@northstar.test", password: "demo1234", code: "" };
@@ -11,6 +11,7 @@ function App() {
   const [auth, setAuth] = useState(emptyForm);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function refresh() {
     const response = await fetch("/api/me");
@@ -70,7 +71,24 @@ function App() {
             {authMode !== "login" && <label>Name<input value={auth.name} onChange={(e) => setAuth({ ...auth, name: e.target.value })} /></label>}
             {authMode === "join" && <label>Invite code<input value={auth.code} onChange={(e) => setAuth({ ...auth, code: e.target.value.toUpperCase() })} /></label>}
             <label>Email<input value={auth.email} onChange={(e) => setAuth({ ...auth, email: e.target.value })} /></label>
-            <label>Password<input type="password" value={auth.password} onChange={(e) => setAuth({ ...auth, password: e.target.value })} /></label>
+            <label>
+              Password
+              <div className="password-field">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={auth.password}
+                  onChange={(e) => setAuth({ ...auth, password: e.target.value })}
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowPassword((value) => !value)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </label>
             {error && <p className="error"><AlertTriangle size={16} />{error}</p>}
             <button className="primary" disabled={busy}>{busy ? "Working..." : authMode === "register" ? "Create school" : authMode === "join" ? "Join school" : "Log in"}</button>
           </form>
@@ -155,7 +173,7 @@ function Ops({ snapshot, refresh, demoSeed }) {
       </section>
       {user.role === "admin" && <AdminTools snapshot={snapshot} refresh={refresh} />}
       <div className="grid" style={{ gridColumn: user.role === "admin" ? "auto" : "1 / -1" }}>
-        <Assignments snapshot={snapshot} />
+        <Assignments snapshot={snapshot} refresh={refresh} canManage={["admin", "teacher"].includes(user.role)} />
         <Submissions snapshot={snapshot} />
       </div>
     </div>
@@ -223,12 +241,42 @@ function AdminTools({ snapshot, refresh }) {
           <input value={invite.email} onChange={(e) => setInvite({ ...invite, email: e.target.value })} placeholder="Email" />
         </label>
         {invite.role !== "guardian" ? (
-          <label>
-            Target Classes (Ctrl+click to select multiple)
-            <select multiple value={invite.classIds} onChange={(e) => setInvite({ ...invite, classIds: selected(e) })} style={{ minHeight: "80px" }}>
-              {snapshot.classes.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+          <div>
+            <label>Target Classes</label>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.25rem", marginBottom: "0.5rem" }}>
+              {invite.classIds.map((classId) => {
+                const cls = snapshot.classes.find((c) => c.id === classId);
+                if (!cls) return null;
+                return (
+                  <span key={classId} className="pill" style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem", padding: "0.25rem 0.6rem" }}>
+                    {cls.name}
+                    <button
+                      type="button"
+                      style={{ border: 0, background: "transparent", padding: 0, cursor: "pointer", color: "#ef4444", fontWeight: "bold", fontSize: "1rem" }}
+                      onClick={() => setInvite({ ...invite, classIds: invite.classIds.filter((id) => id !== classId) })}
+                    >
+                      ×
+                    </button>
+                  </span>
+                );
+              })}
+              {invite.classIds.length === 0 && (
+                <span style={{ fontSize: "0.85rem", color: "#8caba1", fontStyle: "italic" }}>No target classes selected.</span>
+              )}
+            </div>
+            <select
+              value=""
+              onChange={(e) => {
+                if (e.target.value) setInvite({ ...invite, classIds: Array.from(new Set([...invite.classIds, e.target.value])) });
+              }}
+              style={{ width: "auto", padding: "0.5rem 1rem", borderRadius: "10px" }}
+            >
+              <option value="">+ Add class...</option>
+              {snapshot.classes.filter((cls) => !invite.classIds.includes(cls.id)).map((cls) => (
+                <option key={cls.id} value={cls.id}>{cls.name}</option>
+              ))}
             </select>
-          </label>
+          </div>
         ) : (
           <label>
             Linked Student(s)
@@ -253,9 +301,12 @@ function Documents({ snapshot, refresh }) {
     text: "Title: Cell Structure Lab Reflection\nSubject: Biology\nClass: Grade 6A\nDue: 2026-07-08\nWrite a 300 word reflection and include one diagram."
   });
   const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   async function upload(event) {
     event.preventDefault();
+    if (uploading) return;
+    setUploading(true);
     const formData = new FormData();
     formData.append("type", doc.type);
     if (file) {
@@ -264,6 +315,7 @@ function Documents({ snapshot, refresh }) {
       formData.append("text", doc.text);
     }
     const response = await api("/api/documents", formData);
+    setUploading(false);
     if (!response.error) {
       setFile(null);
       refresh();
@@ -293,7 +345,7 @@ function Documents({ snapshot, refresh }) {
           </label>
           {!file && <textarea value={doc.text} onChange={(e) => setDoc({ ...doc, text: e.target.value })} />}
           {file && <div className="file-preview">📎 {file.name}</div>}
-          <button className="primary"><FileText size={16} /> Parse document</button>
+          <button className="primary" disabled={uploading}><FileText size={16} /> {uploading ? "Parsing..." : "Parse document"}</button>
         </form>
       </section>
       <section className="panel">
@@ -666,11 +718,47 @@ function StudentDashboard({ snapshot, refresh }) {
 }
 
 function GuardianDashboard({ snapshot, refresh }) {
-  const { users, assignments, submissions, reminders } = snapshot;
+  const { user, users, assignments, submissions, reminders } = snapshot;
   const children = users.filter((u) => u.role === "student");
+  const [digest, setDigest] = useState(null);
+  const [busy, setBusy] = useState(false);
+
+  async function toggleOptIn() {
+    setBusy(true);
+    await api("/api/guardian/opt-in", { optedIn: !user.optedIn });
+    setBusy(false);
+    refresh();
+  }
+
+  async function requestDigest() {
+    setBusy(true);
+    const response = await api("/api/guardian/digest", {});
+    setBusy(false);
+    if (!response.error) setDigest(response.digest);
+  }
 
   return (
     <div className="grid">
+      <section className="panel">
+        <div className="panel-header">
+          <h3>Notification preferences</h3>
+        </div>
+        <p style={{ color: "#4c6a61", fontSize: "0.9rem" }}>
+          You are currently <strong>{user.optedIn ? "opted in" : "opted out"}</strong> of progress digests and escalation messages.
+        </p>
+        <div className="top-actions">
+          <button disabled={busy} className="primary" onClick={toggleOptIn}>{user.optedIn ? "Opt out" : "Opt in to updates"}</button>
+          <button disabled={busy} onClick={requestDigest}><Bell size={16} /> Request digest</button>
+        </div>
+        {digest && (
+          <div className="metrics" style={{ marginTop: "1rem" }}>
+            <Metric icon={<AlertTriangle />} label="Blocked" value={digest.blocked} />
+            <Metric icon={<CheckCircle2 />} label="Submitted" value={digest.submitted} />
+            <Metric icon={<BookOpen />} label="In progress" value={digest.inProgress} />
+            <Metric icon={<Users />} label="Not started" value={digest.notStarted} />
+          </div>
+        )}
+      </section>
       {children.map((child) => {
         const childSubmissions = submissions.filter((s) => s.studentId === child.id);
         const childReminders = reminders.filter((r) => r.studentId === child.id);
@@ -744,6 +832,9 @@ function Chat({ snapshot, refresh }) {
   const [assignmentId, setAssignmentId] = useState(snapshot.assignments[0]?.id || "");
   const [studentId, setStudentId] = useState("");
   const [last, setLast] = useState(null);
+  const [chatId, setChatId] = useState("");
+  const [linkBusy, setLinkBusy] = useState(false);
+  const telegramBinding = (snapshot.chatBindings || []).find((item) => item.provider === "telegram");
 
   async function send(event) {
     event.preventDefault();
@@ -757,8 +848,36 @@ function Chat({ snapshot, refresh }) {
     refresh();
   }
 
+  async function linkTelegram(event) {
+    event.preventDefault();
+    if (!chatId.trim()) return;
+    setLinkBusy(true);
+    await api("/api/webhook/telegram/bind", { chatId: chatId.trim() });
+    setLinkBusy(false);
+    setChatId("");
+    refresh();
+  }
+
   return (
     <div className="grid two">
+      <section className="panel" style={{ gridColumn: "1 / -1" }}>
+        <div className="panel-header">
+          <h3>Link a real Telegram chat</h3>
+        </div>
+        {telegramBinding ? (
+          <p style={{ color: "#4c6a61", fontSize: "0.9rem" }}>
+            Linked to Telegram chat <strong>{telegramBinding.chatId}</strong>. Message the bot for status updates and reminders, or send a new chat ID below to re-link.
+          </p>
+        ) : (
+          <p style={{ color: "#4c6a61", fontSize: "0.9rem" }}>
+            Message the bot on Telegram first — it will reply with your chat ID. Paste it here to link this account, then reminders and replies flow through the real chat.
+          </p>
+        )}
+        <form className="inline-form" onSubmit={linkTelegram}>
+          <input value={chatId} onChange={(e) => setChatId(e.target.value)} placeholder="Telegram chat ID" />
+          <button className="primary" disabled={linkBusy}><Send size={16} /> {linkBusy ? "Linking..." : "Link"}</button>
+        </form>
+      </section>
       <section className="panel">
         <div className="panel-header">
           <h3>Message envelope</h3>
@@ -785,7 +904,26 @@ function Chat({ snapshot, refresh }) {
   );
 }
 
-function Assignments({ snapshot }) {
+function Assignments({ snapshot, refresh, canManage = false }) {
+  const [busyId, setBusyId] = useState(null);
+
+  async function changeDueDate(item) {
+    const value = window.prompt("New due date (YYYY-MM-DD)", item.dueDate ? item.dueDate.substring(0, 10) : "");
+    if (!value) return;
+    setBusyId(item.id);
+    await api(`/api/assignments/${item.id}`, { dueDate: new Date(value).toISOString() }, "PATCH");
+    setBusyId(null);
+    refresh?.();
+  }
+
+  async function cancel(item) {
+    if (!window.confirm(`Cancel "${item.title}"? Students will no longer be reminded about it.`)) return;
+    setBusyId(item.id);
+    await api(`/api/assignments/${item.id}/cancel`, {}, "POST");
+    setBusyId(null);
+    refresh?.();
+  }
+
   return (
     <section className="panel">
       <h3>Assignments</h3>
@@ -795,6 +933,12 @@ function Assignments({ snapshot }) {
             <div className="row"><strong>{item.title}</strong><Pill>{item.status}</Pill></div>
             <p>{item.subject} · due {item.dueDate ? new Date(item.dueDate).toLocaleDateString() : "not set"}</p>
             <small>{item.targetStudentIds.length} target student(s)</small>
+            {canManage && item.status !== "cancelled" && (
+              <div className="top-actions" style={{ marginTop: "0.75rem" }}>
+                <button disabled={busyId === item.id} onClick={() => changeDueDate(item)} style={{ padding: "0.35rem 0.7rem", borderRadius: "10px", fontSize: "0.8rem" }}>Update due date</button>
+                <button disabled={busyId === item.id} onClick={() => cancel(item)} className="danger-button" style={{ padding: "0.35rem 0.7rem", borderRadius: "10px", fontSize: "0.8rem" }}>Cancel assignment</button>
+              </div>
+            )}
           </article>
         ))}
         {snapshot.assignments.length === 0 && <p style={{ color: "#5d736b", padding: "1rem", textAlign: "center" }}>No assignments found.</p>}
@@ -846,7 +990,7 @@ function Pill({ children }) {
   return <span className="pill">{children}</span>;
 }
 
-async function api(path, payload) {
+async function api(path, payload, method = "POST") {
   const headers = {};
   let body = payload;
   if (!(payload instanceof FormData)) {
@@ -854,7 +998,7 @@ async function api(path, payload) {
     body = JSON.stringify(payload);
   }
   const response = await fetch(path, {
-    method: "POST",
+    method,
     headers,
     body
   });

@@ -9,6 +9,8 @@ import { processChatWebhook, bindChat } from "../controllers/chatController.js";
 import { joinWithInvite, login, logout, register } from "../controllers/authController.js";
 import { requestContext, requireLogin } from "../middleware/authMiddleware.js";
 import { runReminders } from "../controllers/reminderController.js";
+import { cancelAssignment, updateAssignment } from "../controllers/assignmentController.js";
+import { requestGuardianDigest, setGuardianOptIn } from "../controllers/guardianController.js";
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024 } });
 
@@ -37,6 +39,10 @@ export function createApiRouter() {
   router.post("/webhook/whatsapp/bind", asyncHandler((req, res) => bindChat(req, res, "whatsapp")));
   router.post("/reminders/run", asyncHandler(runReminders));
   router.post("/demo/seed", asyncHandler(seedDemo));
+  router.patch("/assignments/:assignmentId", asyncHandler(updateAssignment));
+  router.post("/assignments/:assignmentId/cancel", asyncHandler(cancelAssignment));
+  router.post("/guardian/opt-in", asyncHandler(setGuardianOptIn));
+  router.post("/guardian/digest", asyncHandler(requestGuardianDigest));
 
   return router;
 }

@@ -58,11 +58,12 @@ export function canReadAssignment(user, assignment) {
   return false;
 }
 
-export function canReadStudent(user, studentId) {
+export function canReadStudent(user, student) {
+  if (!user || !student || user.schoolId !== student.schoolId) return false;
   if (user.role === "admin") return true;
-  if (user.role === "teacher") return user.studentIds?.includes(studentId);
-  if (user.role === "student") return user.id === studentId;
-  if (user.role === "guardian") return user.studentIds.includes(studentId);
+  if (user.role === "teacher") return (student.classIds || []).some((id) => user.classIds.includes(id));
+  if (user.role === "student") return user.id === student.id;
+  if (user.role === "guardian") return user.studentIds.includes(student.id);
   return false;
 }
 

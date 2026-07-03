@@ -37,6 +37,7 @@ export async function snapshotFor(store, user) {
       assignments,
       submissions,
       reminders,
+      chatBindings: data.chatBindings.filter((item) => item.userId === user.id).map((item) => ({ provider: item.provider, chatId: item.chatId })),
       auditEvents: visibleAuditEvents(data, user, visibleAssignmentIds).slice(0, 80)
     };
   });
@@ -90,7 +91,7 @@ export function applyRoster(data, doc, user, correlation) {
     }
     let guardian = data.users.find((item) => item.schoolId === user.schoolId && item.role === "guardian" && item.email === row.guardianContact.toLowerCase());
     if (!guardian && row.guardianContact.includes("@")) {
-      guardian = { id: makeId("usr"), schoolId: user.schoolId, role: "guardian", name: `${row.studentName} Guardian`, email: row.guardianContact.toLowerCase(), passwordHash: hashPassword("demo1234"), classIds: [], studentIds: [student.id] };
+      guardian = { id: makeId("usr"), schoolId: user.schoolId, role: "guardian", name: `${row.studentName} Guardian`, email: row.guardianContact.toLowerCase(), passwordHash: hashPassword("demo1234"), classIds: [], studentIds: [student.id], optedIn: false };
       data.users.push(guardian);
       created.push(guardian.id);
     } else if (guardian && !guardian.studentIds.includes(student.id)) guardian.studentIds.push(student.id);

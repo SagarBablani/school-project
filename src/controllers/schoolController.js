@@ -61,6 +61,7 @@ export async function acceptInvite(req, res) {
     req.user.role = invite.role;
     req.user.classIds = invite.classIds;
     req.user.studentIds = invite.studentIds;
+    if (invite.role === "guardian" && req.user.optedIn === undefined) req.user.optedIn = false;
     if (invite.name && !req.user.name) req.user.name = invite.name;
     invite.usedBy = req.user.id;
     if (invite.role === "teacher") {

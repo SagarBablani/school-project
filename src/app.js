@@ -1,21 +1,28 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { resolve } from "node:path";
 import { JsonStore } from "./models/store.js";
 import { createApiRouter } from "./routes/apiRoutes.js";
 import { startScheduler } from "./scheduler.js";
+import { startTelegramPolling } from "./telegramBot.js";
 
 export function createApp({
   dataFile = process.env.DATA_FILE || "work/data.json",
   secret = process.env.SESSION_SECRET || "dev-secret-change-me",
   uploadDir = process.env.UPLOAD_DIR || "work/uploads",
-  publicDir = resolve("dist")
+  publicDir = resolve("dist"),
+  telegramToken = process.env.TELEGRAM_BOT_TOKEN || ""
 } = {}) {
   const app = express();
   // Basic security middleware
+  app.use(helmet({ contentSecurityPolicy: false }));
   app.use(cors({ origin: true }));
   app.use(rateLimit({ windowMs: 60 * 1000, max: 200 }));
+  app.use("/api/login", rateLimit({ windowMs: 60 * 1000, max: 20 }));
+  app.use("/api/register", rateLimit({ windowMs: 60 * 1000, max: 20 }));
+  app.use("/api/join", rateLimit({ windowMs: 60 * 1000, max: 20 }));
   const sseClients = new Set();
   const store = new JsonStore(dataFile);
 
@@ -50,6 +57,16 @@ export function createApp({
     startScheduler(app);
   } catch (err) {
     console.error('Failed to start scheduler', err);
+  }
+
+  // Telegram is opt-in: only poll for updates when a bot token is configured,
+  // so the app runs (and tests run) with no external network calls by default.
+  if (telegramToken) {
+    try {
+      startTelegramPolling(app, telegramToken);
+    } catch (err) {
+      console.error("Failed to start Telegram polling", err);
+    }
   }
 
   return app;

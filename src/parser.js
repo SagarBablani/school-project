@@ -141,12 +141,18 @@ export function identifyIntent(message) {
   if (!text) return { intent: "unknown", confidence: 0.1, unsafe: false, entities: {} };
   if (detectUnsafe(text)) return { intent: "unsafe", confidence: 0.98, unsafe: true, entities: {} };
   const lower = text.toLowerCase();
+  if (/resubmit|re-submit|updated (my )?(work|submission)|revised submission/.test(lower)) return { intent: "resubmission", confidence: 0.85, unsafe: false, entities: { body: text } };
   if (/submit|here is my work|attached/.test(lower)) return { intent: "submission", confidence: 0.86, unsafe: false, entities: { body: text } };
   if (/blocked|stuck|help|confused/.test(lower)) return { intent: "blocked_help_request", confidence: 0.84, unsafe: false, entities: { note: text } };
   if (/progress|working on|almost done|started/.test(lower)) return { intent: "progress_update", confidence: 0.78, unsafe: false, entities: { note: text } };
-  if (/feedback|revise|revision/.test(lower)) return { intent: "teacher_feedback", confidence: 0.76, unsafe: false, entities: { note: text } };
+  if (/revise|redo|needs? (a )?revision|please fix/.test(lower)) return { intent: "revision_request", confidence: 0.8, unsafe: false, entities: { note: text } };
   if (/complete|approved|looks good/.test(lower)) return { intent: "completion_decision", confidence: 0.8, unsafe: false, entities: { note: text } };
+  if (/feedback/.test(lower)) return { intent: "teacher_feedback", confidence: 0.76, unsafe: false, entities: { note: text } };
+  if (/opt.?in|subscribe to (updates|digest)|enroll me/.test(lower)) return { intent: "parent_opt_in", confidence: 0.82, unsafe: false, entities: {} };
+  if (/acknowledge|got it|noted|i.?ll (handle|follow up|take care)/.test(lower)) return { intent: "escalation_acknowledgement", confidence: 0.75, unsafe: false, entities: {} };
   if (/digest|summary/.test(lower)) return { intent: "parent_digest_request", confidence: 0.78, unsafe: false, entities: {} };
+  if (/update assignment|change (the )?(due date|deadline)|extend (the )?deadline|reschedule/.test(lower)) return { intent: "update_assignment", confidence: 0.7, unsafe: false, entities: { text } };
+  if (/cancel assignment|call off (the )?assignment|remove (the )?assignment/.test(lower)) return { intent: "cancel_assignment", confidence: 0.72, unsafe: false, entities: { text } };
   if (/create assignment|new assignment|due/.test(lower)) return { intent: "create_assignment", confidence: 0.72, unsafe: false, entities: { text } };
   return { intent: "unknown", confidence: 0.35, unsafe: false, entities: { text } };
 }

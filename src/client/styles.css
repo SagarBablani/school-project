@@ -178,6 +178,38 @@ pre {
   gap: 0.45rem;
 }
 
+.password-field {
+  position: relative;
+  display: flex;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 2.6rem;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.4rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: #5d736b;
+  cursor: pointer;
+  padding: 0.35rem;
+  border-radius: 8px;
+}
+
+.password-toggle:hover {
+  color: #0f5f4f;
+  background: #eaf4ef;
+  transform: translateY(-50%);
+}
+
 .app-shell {
   min-height: 100vh;
   display: grid;
@@ -395,7 +427,8 @@ pre {
   align-items: center;
 }
 
-.file-input-wrapper {
+.file-input-wrapper,
+.form-grid label.file-input-wrapper {
   display: flex;
   flex-direction: row;
   align-items: center;

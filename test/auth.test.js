@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { canReadAssignment, hashPassword, verifyPassword, canAccessDocument } from "../src/auth.js";
+import { canReadAssignment, hashPassword, verifyPassword, canAccessDocument, canReadStudent } from "../src/auth.js";
 
 test("password hashing verifies correct secret only", () => {
   const hash = hashPassword("demo1234");
@@ -30,5 +30,17 @@ test("document authorization respects uploader and class scope", () => {
   assert.equal(canAccessDocument({ role: "teacher", id: "teach_2", schoolId: "sch_1", classIds: ["cls_1"] }, document), true); // matches class
   assert.equal(canAccessDocument({ role: "teacher", id: "teach_2", schoolId: "sch_1", classIds: ["cls_2"] }, document), false); // different class
   assert.equal(canAccessDocument({ role: "student", schoolId: "sch_1" }, document), false); // student blocked
+});
+
+test("student authorization respects school, class, and identity scope", () => {
+  const student = { id: "stu_1", schoolId: "sch_1", classIds: ["cls_1"] };
+  assert.equal(canReadStudent({ role: "admin", schoolId: "sch_1" }, student), true);
+  assert.equal(canReadStudent({ role: "teacher", schoolId: "sch_1", classIds: ["cls_1"] }, student), true);
+  assert.equal(canReadStudent({ role: "teacher", schoolId: "sch_1", classIds: ["cls_2"] }, student), false);
+  assert.equal(canReadStudent({ role: "student", schoolId: "sch_1", id: "stu_1" }, student), true);
+  assert.equal(canReadStudent({ role: "student", schoolId: "sch_1", id: "stu_2" }, student), false);
+  assert.equal(canReadStudent({ role: "guardian", schoolId: "sch_1", studentIds: ["stu_1"] }, student), true);
+  assert.equal(canReadStudent({ role: "guardian", schoolId: "sch_1", studentIds: ["stu_9"] }, student), false);
+  assert.equal(canReadStudent({ role: "admin", schoolId: "other" }, student), false);
 });
 

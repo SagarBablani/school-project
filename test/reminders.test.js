@@ -26,3 +26,11 @@ test("blocked students are escalated while submitted students are skipped", () =
   const actions = runReminderEngine(data, { at: new Date("2026-07-01T12:00:00Z") }).map((item) => item.action).sort();
   assert.deepEqual(actions, ["escalate_blocked", "skip_submitted"]);
 });
+
+test("cancelled assignments are excluded from reminders", () => {
+  const data = createEmptyData();
+  data.schools.push({ id: "sch_1", policy: { start: "21:00", end: "07:00" } });
+  data.assignments.push({ id: "asg_1", schoolId: "sch_1", status: "cancelled", targetStudentIds: ["stu_1"] });
+  const emitted = runReminderEngine(data, { at: new Date("2026-07-01T12:00:00Z") });
+  assert.deepEqual(emitted, []);
+});

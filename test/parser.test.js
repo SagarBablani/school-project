@@ -36,3 +36,18 @@ test("text file extraction returns the file contents", async () => {
   const text = await extractTextFromFile(file);
   assert.equal(text, "Hello from the uploaded file");
 });
+
+test("intent layer distinguishes resubmission, revision, and completion", () => {
+  assert.equal(identifyIntent("I resubmitted the updated version").intent, "resubmission");
+  assert.equal(identifyIntent("Please revise the diagram").intent, "revision_request");
+  assert.equal(identifyIntent("This looks good, approved").intent, "completion_decision");
+  assert.equal(identifyIntent("Just leaving feedback on the draft").intent, "teacher_feedback");
+});
+
+test("intent layer routes parent and admin-facing intents", () => {
+  assert.equal(identifyIntent("I want to opt in to updates").intent, "parent_opt_in");
+  assert.equal(identifyIntent("Acknowledged, I'll follow up tonight").intent, "escalation_acknowledgement");
+  assert.equal(identifyIntent("Can you send our weekly digest?").intent, "parent_digest_request");
+  assert.equal(identifyIntent("Please update assignment due date").intent, "update_assignment");
+  assert.equal(identifyIntent("Cancel assignment for Grade 6A").intent, "cancel_assignment");
+});

@@ -54,7 +54,8 @@ export async function joinWithInvite(req, res) {
       email,
       passwordHash: hashPassword(body.password),
       classIds: invite.classIds,
-      studentIds: invite.studentIds
+      studentIds: invite.studentIds,
+      optedIn: invite.role === "guardian" ? false : undefined
     };
     data.users.push(created);
     invite.usedBy = created.id;

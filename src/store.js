@@ -24,6 +24,7 @@ export class JsonStore {
   constructor(file) {
     this.file = file;
     this.data = createEmptyData();
+    this.queue = Promise.resolve();
     this.ready = this.load();
   }
 
@@ -39,7 +40,7 @@ export class JsonStore {
 
   async save() {
     await mkdir(dirname(this.file), { recursive: true });
-    const tmp = `${this.file}.${process.pid}.tmp`;
+    const tmp = `${this.file}.${process.pid}.${randomUUID()}.tmp`;
     await writeFile(tmp, JSON.stringify(this.data, null, 2));
     await rename(tmp, this.file);
   }
@@ -49,11 +50,24 @@ export class JsonStore {
     return fn(this.data);
   }
 
+  // Concurrent HTTP requests can each call mutate() before an earlier save()
+  // finishes. Reads/mutations of `this.data` are synchronous, but save() is
+  // not, so overlapping mutate() calls must be serialized or their writes to
+  // disk interleave and corrupt/lose state. This queue guarantees at most
+  // one mutate-then-save runs at a time, in call order.
   async mutate(fn) {
     await this.ready;
-    const result = await fn(this.data);
-    await this.save();
-    return result;
+    const runAfter = this.queue.catch(() => {});
+    let release;
+    this.queue = new Promise((resolve) => { release = resolve; });
+    await runAfter;
+    try {
+      const result = await fn(this.data);
+      await this.save();
+      return result;
+    } finally {
+      release();
+    }
   }
 }
 

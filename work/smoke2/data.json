@@ -1,0 +1,101 @@
+{
+  "schools": [
+    {
+      "id": "sch_bd7f3a98-a7dc-4658-a95c-e60a85ae57f5",
+      "name": "Smoke2",
+      "policy": {
+        "start": "21:00",
+        "end": "07:00"
+      },
+      "createdAt": "2026-07-03T19:59:26.443Z"
+    }
+  ],
+  "classes": [],
+  "users": [
+    {
+      "id": "usr_b7145782-b2e8-4704-9bd6-5c5f1b0c23c3",
+      "schoolId": "sch_bd7f3a98-a7dc-4658-a95c-e60a85ae57f5",
+      "role": "admin",
+      "name": "Admin",
+      "email": "a2@smoke.local",
+      "passwordHash": "98deffa216043e3854e3d8331e0f5f04:6e7d970082cd5b7672531165ced1b739fa0f20a9f35e6a0fb792755e74f0767593db697c06612172012cb1a85942d2e4656918869d46234e129200fad412be35",
+      "classIds": [],
+      "studentIds": []
+    }
+  ],
+  "teacherClasses": [],
+  "invites": [],
+  "documents": [
+    {
+      "id": "doc_b39b88f7-99d6-43eb-9ffb-95c32fe154af",
+      "schoolId": "sch_bd7f3a98-a7dc-4658-a95c-e60a85ae57f5",
+      "actorId": "usr_b7145782-b2e8-4704-9bd6-5c5f1b0c23c3",
+      "type": "assignment",
+      "originalName": "upload.txt",
+      "fileName": "upload_bdc13415-3afe-4dab-a0cc-193799915a2d.txt",
+      "fileType": "text/plain",
+      "text": "Title: Cell Lab\nSubject: Science\nClass: Grade 1\nDue: 2026-08-01\nDo it.",
+      "parsed": {
+        "type": "assignment",
+        "fields": {
+          "title": "Cell Lab",
+          "subject": "Science",
+          "dueDate": "2026-08-01T00:00:00.000Z",
+          "targetRaw": "Grade 1",
+          "instructions": "Do it.",
+          "classIds": [],
+          "targetStudentIds": []
+        },
+        "ambiguityNotes": [
+          "Target did not match known classes or students: Grade 1"
+        ],
+        "confidence": 0.7999999999999999,
+        "needsClarification": true,
+        "unsafe": false
+      },
+      "approvalState": "needs_review",
+      "createdAt": "2026-07-03T19:59:35.985Z"
+    }
+  ],
+  "assignments": [],
+  "submissions": [],
+  "reminders": [],
+  "idempotencyKeys": [],
+  "chatBindings": [],
+  "scheduler": {
+    "lastRunAt": "2026-07-03T21:05:22.618Z"
+  },
+  "auditEvents": [
+    {
+      "id": "evt_2ade68cc-0534-40d7-8f29-46ef39ff8ba0",
+      "at": "2026-07-03T19:59:35.990Z",
+      "correlationId": "corr_1783108775979_604745db",
+      "actorId": "usr_b7145782-b2e8-4704-9bd6-5c5f1b0c23c3",
+      "schoolId": "sch_bd7f3a98-a7dc-4658-a95c-e60a85ae57f5",
+      "resourceType": "document",
+      "resourceId": "doc_b39b88f7-99d6-43eb-9ffb-95c32fe154af",
+      "action": "document.parsed",
+      "outcome": "ok",
+      "details": {
+        "type": "assignment",
+        "fileName": "upload_bdc13415-3afe-4dab-a0cc-193799915a2d.txt",
+        "confidence": 0.7999999999999999,
+        "notes": [
+          "Target did not match known classes or students: Grade 1"
+        ]
+      }
+    },
+    {
+      "id": "evt_376999d8-8661-4754-89dc-8d2592bdc457",
+      "at": "2026-07-03T19:59:26.479Z",
+      "correlationId": "corr_1783108766443_f4bc5b33",
+      "actorId": "usr_b7145782-b2e8-4704-9bd6-5c5f1b0c23c3",
+      "schoolId": "sch_bd7f3a98-a7dc-4658-a95c-e60a85ae57f5",
+      "resourceType": "school",
+      "resourceId": "sch_bd7f3a98-a7dc-4658-a95c-e60a85ae57f5",
+      "action": "school.registered",
+      "outcome": "ok",
+      "details": {}
+    }
+  ]
+}
