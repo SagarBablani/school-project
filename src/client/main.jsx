@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { AlertTriangle, Bell, BookOpen, CheckCircle2, FileText, Lock, LogOut, MessageSquare, Plus, RefreshCw, School, Send, Shield, Users } from "lucide-react";
+import { AlertTriangle, Bell, BookOpen, CheckCircle2, FileText, Lock, LogOut, MessageSquare, School, Send, Shield, Users } from "lucide-react";
 import "./styles.css";
 
 const emptyForm = { schoolName: "Northstar Public School", name: "Asha Rao", email: "admin@northstar.test", password: "demo1234", code: "" };
@@ -113,12 +113,8 @@ function Workspace({ snapshot, setSnapshot, logout, refresh }) {
             <h2>{titleFor(tab)}</h2>
             <p>{summaryForRole(user.role)}</p>
           </div>
-          <div className="top-actions">
-            {user.role === "admin" && <button onClick={demoSeed}><Plus size={16} /> Seed classes</button>}
-            <button onClick={refresh}><RefreshCw size={16} /> Refresh</button>
-          </div>
         </header>
-        {tab === "ops" && <Ops snapshot={snapshot} refresh={refresh} />}
+        {tab === "ops" && <Ops snapshot={snapshot} refresh={refresh} demoSeed={demoSeed} />}
         {tab === "documents" && <Documents snapshot={snapshot} refresh={refresh} />}
         {tab === "chat" && <Chat snapshot={snapshot} refresh={refresh} />}
         {tab === "audit" && <Audit events={snapshot.auditEvents} />}
@@ -127,12 +123,21 @@ function Workspace({ snapshot, setSnapshot, logout, refresh }) {
   );
 }
 
-function Ops({ snapshot, refresh }) {
+function Ops({ snapshot, refresh, demoSeed }) {
   const { user } = snapshot;
   return (
     <div className="grid two">
-      <Metrics snapshot={snapshot} />
-      {user.role === "admin" && <AdminTools snapshot={snapshot} refresh={refresh} />}
+      <section className="panel">
+        <div className="panel-header">
+          <h3>Operations tools</h3>
+          <div className="top-actions">
+            <button onClick={refresh}><BookOpen size={16} /> Refresh</button>
+            {user.role === "admin" && <button className="secondary" onClick={demoSeed}><Send size={16} /> Seed demo</button>}
+          </div>
+        </div>
+        <Metrics snapshot={snapshot} />
+      </section>
+      {user.role === "admin" && <AdminTools snapshot={snapshot} refresh={refresh} demoSeed={demoSeed} />}
       <Assignments snapshot={snapshot} />
       <Submissions snapshot={snapshot} />
     </div>
@@ -157,7 +162,7 @@ function Metric({ icon, label, value }) {
   return <div className="metric">{icon}<span>{label}</span><strong>{value}</strong></div>;
 }
 
-function AdminTools({ snapshot, refresh }) {
+function AdminTools({ snapshot, refresh, demoSeed }) {
   const [klass, setKlass] = useState({ name: "Grade 6A", grade: "6" });
   const [invite, setInvite] = useState({ role: "teacher", name: "Meera Iyer", email: "teacher@northstar.test", classIds: [] });
   const students = snapshot.users.filter((item) => item.role === "student");
@@ -180,7 +185,7 @@ function AdminTools({ snapshot, refresh }) {
       <form className="inline-form" onSubmit={addClass}>
         <input value={klass.name} onChange={(e) => setKlass({ ...klass, name: e.target.value })} />
         <input value={klass.grade} onChange={(e) => setKlass({ ...klass, grade: e.target.value })} />
-        <button><Plus size={16} /> Class</button>
+        <button><Send size={16} /> Class</button>
       </form>
       <form className="form-grid" onSubmit={addInvite}>
         <select value={invite.role} onChange={(e) => setInvite({ ...invite, role: e.target.value })}>
@@ -241,7 +246,9 @@ function Documents({ snapshot, refresh }) {
   return (
     <div className="grid two">
       <section className="panel">
-        <h3>Upload or paste document</h3>
+        <div className="panel-header">
+          <h3>Upload or paste document</h3>
+        </div>
         <form className="form-grid" onSubmit={upload}>
           <select value={doc.type} onChange={(e) => setDoc({ ...doc, type: e.target.value })}>
             <option value="assignment">Assignment brief</option>
@@ -302,7 +309,9 @@ function Chat({ snapshot, refresh }) {
   return (
     <div className="grid two">
       <section className="panel">
-        <h3>Message envelope</h3>
+        <div className="panel-header">
+          <h3>Message envelope</h3>
+        </div>
         <form className="form-grid" onSubmit={send}>
           <select value={assignmentId} onChange={(e) => setAssignmentId(e.target.value)}>
             <option value="">No assignment</option>
@@ -362,7 +371,9 @@ function Submissions({ snapshot }) {
 function Audit({ events }) {
   return (
     <section className="panel">
-      <h3>Event timeline</h3>
+      <div className="panel-header">
+        <h3>Event timeline</h3>
+      </div>
       <div className="timeline">
         {events.map((event) => (
           <article key={event.id}>
