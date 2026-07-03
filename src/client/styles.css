@@ -496,3 +496,73 @@ button:focus {
     grid-template-columns: 1fr;
   }
 }
+
+/* Custom enhancements for interactive reviews, dashboards and statuses */
+.input-error {
+  border-color: #ef4444 !important;
+  background-color: #fef2f2 !important;
+}
+
+.asg-card.selected {
+  border: 1px solid #0f766e !important;
+  background: #f4fbf8 !important;
+  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.08);
+}
+
+.pill.status-not_started {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.pill.status-in_progress {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.pill.status-blocked {
+  background: #fecaca;
+  color: #991b1b;
+}
+
+.pill.status-submitted {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.pill.status-completed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.roster-table th, .roster-table td {
+  border-bottom: 1px solid #e5f0ea;
+  padding: 0.5rem;
+}
+
+.roster-table tr:hover {
+  background-color: #f9fbfb;
+}
+
+.danger-button {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.8rem;
+}
+
+.danger-button:hover {
+  background: #fca5a5;
+  color: #7f1d1d;
+}
+
+.empty-message {
+  color: #8caba1;
+  text-align: center;
+  padding: 2rem;
+  font-style: italic;
+}
+

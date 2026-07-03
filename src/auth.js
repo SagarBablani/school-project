@@ -65,3 +65,19 @@ export function canReadStudent(user, studentId) {
   if (user.role === "guardian") return user.studentIds.includes(studentId);
   return false;
 }
+
+export function canAccessDocument(user, document) {
+  if (!user || !document || user.schoolId !== document.schoolId) return false;
+  if (user.role === "admin") return true;
+  if (user.role === "teacher") {
+    if (document.actorId === user.id) return true;
+    const classIds = document.parsed?.fields?.classIds || [];
+    if (classIds.length > 0 && classIds.some((id) => user.classIds.includes(id))) return true;
+    if (document.type === "roster" && document.parsed?.fields?.rows) {
+      return document.parsed.fields.rows.some((row) => row.classId && user.classIds.includes(row.classId));
+    }
+    if (!classIds.length && (!document.parsed?.fields?.rows || !document.parsed.fields.rows.length)) return true;
+  }
+  return false;
+}
+

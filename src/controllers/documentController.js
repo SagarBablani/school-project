@@ -1,9 +1,10 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { join, extname } from "node:path";
 import { parseDocument, extractTextFromFile } from "../parser.js";
+import { canAccessDocument } from "../auth.js";
 import { addAudit, makeId } from "../models/store.js";
 import { applyRoster, createAssignmentFromDocument, schoolContext } from "../models/schoolOpsModel.js";
-import { requireRole } from "./http.js";
+import { httpError, requireRole } from "./http.js";
 
 export async function uploadDocument(req, res) {
   const { store, uploadDir, broadcast } = req.app.locals;
@@ -57,9 +58,16 @@ export async function approveDocument(req, res) {
   const result = await store.mutate((data) => {
     const doc = data.documents.find((item) => item.id === req.params.documentId && item.schoolId === req.user.schoolId);
     if (!doc) {
-      const error = new Error("Document not found.");
-      error.status = 404;
-      throw error;
+      throw httpError(404, "Document not found.");
+    }
+    if (doc.approvalState === "approved") {
+      throw httpError(400, "Document is already approved.");
+    }
+    if (!canAccessDocument(req.user, doc)) {
+      throw httpError(403, "You do not have access to approve this document.");
+    }
+    if (doc.type === "policy") {
+      requireRole(req.user, ["admin"]);
     }
     const fields = { ...doc.parsed.fields, ...(req.body?.fields || {}) };
     doc.parsed.fields = fields;

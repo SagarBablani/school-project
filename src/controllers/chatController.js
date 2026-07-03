@@ -1,5 +1,6 @@
 import { addAudit, makeId } from "../models/store.js";
 import { identifyIntent } from "../parser.js";
+import { canReadAssignment } from "../auth.js";
 
 const PROVIDER_CONFIG = {
   telegram: {
@@ -154,6 +155,19 @@ function safeFindAssignment(data, user, preferredAssignmentId) {
 
 function applyIntentToAssignment(data, req, user, assignment, normalized, intent) {
   if (!assignment || !["student", "teacher"].includes(user.role)) return null;
+  if (!canReadAssignment(user, assignment)) {
+    addAudit(data, {
+      correlationId: req.correlationId,
+      actorId: user.id,
+      schoolId: user.schoolId,
+      resourceType: "assignment",
+      resourceId: assignment.id,
+      action: "access.denied",
+      outcome: "denied",
+      details: { intent: intent.intent }
+    });
+    return null;
+  }
   const studentId = user.role === "student" ? user.id : (normalized.studentId || user.id);
   if (user.role === "teacher" && !assignment.targetStudentIds.includes(studentId)) {
     addAudit(data, {

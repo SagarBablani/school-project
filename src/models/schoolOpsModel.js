@@ -1,4 +1,4 @@
-import { canReadAssignment } from "../auth.js";
+import { canReadAssignment, canAccessDocument } from "../auth.js";
 import { hashPassword } from "../auth.js";
 import { addAudit, makeId, publicUser } from "./store.js";
 
@@ -11,16 +11,32 @@ export async function snapshotFor(store, user) {
     const visibleStudentIds = new Set(assignments.flatMap((item) => item.targetStudentIds));
     const users = visibleUsers(data, user, visibleStudentIds).map(publicUser);
     const canOperate = ["admin", "teacher"].includes(user.role);
+
+    const documents = canOperate
+      ? data.documents.filter((item) => item.schoolId === user.schoolId && canAccessDocument(user, item))
+      : [];
+
+    let submissions = data.submissions.filter((item) => item.schoolId === user.schoolId && visibleAssignmentIds.has(item.assignmentId));
+    let reminders = data.reminders.filter((item) => item.schoolId === user.schoolId && visibleAssignmentIds.has(item.assignmentId));
+
+    if (user.role === "student") {
+      submissions = submissions.filter((item) => item.studentId === user.id);
+      reminders = reminders.filter((item) => item.studentId === user.id);
+    } else if (user.role === "guardian") {
+      submissions = submissions.filter((item) => user.studentIds.includes(item.studentId));
+      reminders = reminders.filter((item) => user.studentIds.includes(item.studentId));
+    }
+
     return {
       user: publicUser(user),
       school,
       classes,
       users,
       invites: user.role === "admin" ? data.invites.filter((item) => item.schoolId === user.schoolId) : [],
-      documents: canOperate ? data.documents.filter((item) => item.schoolId === user.schoolId) : [],
+      documents,
       assignments,
-      submissions: data.submissions.filter((item) => item.schoolId === user.schoolId && visibleAssignmentIds.has(item.assignmentId)),
-      reminders: data.reminders.filter((item) => item.schoolId === user.schoolId && visibleAssignmentIds.has(item.assignmentId)),
+      submissions,
+      reminders,
       auditEvents: visibleAuditEvents(data, user, visibleAssignmentIds).slice(0, 80)
     };
   });

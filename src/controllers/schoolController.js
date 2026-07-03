@@ -14,6 +14,8 @@ export async function createClass(req, res) {
   const grade = String(body.grade || "").trim();
   if (!name || !grade) return res.status(400).json({ error: "Name and grade are required." });
   const klass = await store.mutate((data) => {
+    const existing = data.classes.find((item) => item.schoolId === req.user.schoolId && item.name.toLowerCase() === name.toLowerCase());
+    if (existing) throw httpError(409, "A class with this name already exists in this school.");
     const item = { id: makeId("cls"), schoolId: req.user.schoolId, name, grade };
     data.classes.push(item);
     addAudit(data, { correlationId: req.correlationId, actorId: req.user.id, schoolId: req.user.schoolId, resourceType: "class", resourceId: item.id, action: "class.created", details: { name, grade } });
