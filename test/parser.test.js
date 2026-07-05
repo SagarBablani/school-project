@@ -51,3 +51,10 @@ test("intent layer routes parent and admin-facing intents", () => {
   assert.equal(identifyIntent("Please update assignment due date").intent, "update_assignment");
   assert.equal(identifyIntent("Cancel assignment for Grade 6A").intent, "cancel_assignment");
 });
+
+test("the student dashboard's canned Submit message classifies as submission, not completion", () => {
+  // Regression: "Here is my completed reflection work" doesn't match the
+  // "here is my work" phrase but does contain "complete", so it used to be
+  // misrouted to completion_decision and skip the submitted state entirely.
+  assert.equal(identifyIntent("I am submitting my work now").intent, "submission");
+});

@@ -32,7 +32,10 @@ export async function handleMessage(req, res) {
     let effectiveIntent = intent.intent;
     if (["student", "teacher"].includes(req.user.role) && assignment) {
       const studentId = req.user.role === "student" ? req.user.id : body.studentId;
-      if (req.user.role === "teacher" && !assignment.targetStudentIds.includes(studentId)) throw httpError(403, "That student is outside this assignment.");
+      if (req.user.role === "teacher" && !assignment.targetStudentIds.includes(studentId)) {
+        addAudit(data, { correlationId: req.correlationId, actorId: req.user.id, schoolId: req.user.schoolId, resourceType: "assignment", resourceId: assignment.id, action: "access.denied", outcome: "denied", details: { intent: intent.intent, studentId } });
+        throw httpError(403, "That student is outside this assignment.");
+      }
       submission = data.submissions.find((item) => item.assignmentId === assignment.id && item.studentId === studentId);
       if (!submission) {
         submission = { id: makeId("sub"), schoolId: req.user.schoolId, assignmentId: assignment.id, studentId, status: "not_started", history: [] };
@@ -44,7 +47,7 @@ export async function handleMessage(req, res) {
       if (effectiveIntent === "submission" || effectiveIntent === "resubmission") submission.status = "submitted";
       if (effectiveIntent === "revision_request") submission.status = "revision_requested";
       if (effectiveIntent === "completion_decision") submission.status = "completed";
-      submission.history.unshift({ at: new Date().toISOString(), actorId: req.user.id, intent: effectiveIntent, text });
+      submission.history.unshift({ at: new Date().toISOString(), actorId: req.user.id, intent: effectiveIntent, text, quickAction: Boolean(body.quickAction) });
     }
     addAudit(data, { correlationId: req.correlationId, actorId: req.user.id, schoolId: req.user.schoolId, resourceType: "message", resourceId: submission?.id, action: `intent.${effectiveIntent}`, outcome: intent.unsafe ? "denied" : "ok", details: { confidence: intent.confidence } });
     return { intent: { ...intent, intent: effectiveIntent }, submission };

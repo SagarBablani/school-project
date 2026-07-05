@@ -91,6 +91,40 @@ test("assignment lifecycle: create, update, cancel, wrong-context denial, and re
   });
 });
 
+test("a teacher referencing a student outside the assignment is denied and audited", async () => {
+  await withServer(async (base) => {
+    const admin = client(base);
+    await admin("/api/register", { method: "POST", body: { schoolName: "Test School", name: "Admin", email: "admin@test.local", password: "demo1234" } });
+
+    const klassA = await admin("/api/classes", { method: "POST", body: { name: "Grade 1A", grade: "1" } });
+    const klassB = await admin("/api/classes", { method: "POST", body: { name: "Grade 2B", grade: "2" } });
+
+    const inviteTeacher = await admin("/api/invites", { method: "POST", body: { role: "teacher", classIds: [klassA.json.class.id] } });
+    const teacher = client(base);
+    await teacher("/api/join", { method: "POST", body: { code: inviteTeacher.json.invite.code, name: "Teacher A", email: "teacher@test.local", password: "demo1234" } });
+
+    const inviteStudentA = await admin("/api/invites", { method: "POST", body: { role: "student", classIds: [klassA.json.class.id] } });
+    const studentA = client(base);
+    await studentA("/api/join", { method: "POST", body: { code: inviteStudentA.json.invite.code, name: "Student A", email: "studentA@test.local", password: "demo1234" } });
+
+    const inviteStudentB = await admin("/api/invites", { method: "POST", body: { role: "student", classIds: [klassB.json.class.id] } });
+    const studentB = client(base);
+    const joinB = await studentB("/api/join", { method: "POST", body: { code: inviteStudentB.json.invite.code, name: "Student B", email: "studentB@test.local", password: "demo1234" } });
+    const studentBId = joinB.json.user.id;
+
+    const doc = await admin("/api/documents", { method: "POST", body: { type: "assignment", text: "Title: Lab\nSubject: Science\nClass: Grade 1A\nDue: 2026-08-01\nDo it." } });
+    const approve = await admin(`/api/documents/${doc.json.document.id}/approve`, { method: "POST", body: {} });
+    assert.ok(!approve.json.assignment.targetStudentIds.includes(studentBId));
+
+    const denied = await teacher("/api/messages", { method: "POST", body: { assignmentId: approve.json.assignment.id, studentId: studentBId, text: "please revise the diagram" } });
+    assert.equal(denied.status, 403);
+
+    const snapshot = await admin("/api/me");
+    const deniedEvent = snapshot.json.auditEvents.find((event) => event.action === "access.denied" && event.details?.studentId === studentBId);
+    assert.ok(deniedEvent, "expected an access.denied audit event referencing the out-of-scope student");
+  });
+});
+
 test("guardian opt-in and digest request are scoped to linked students", async () => {
   await withServer(async (base) => {
     const admin = client(base);

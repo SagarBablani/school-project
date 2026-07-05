@@ -278,12 +278,42 @@ function AdminTools({ snapshot, refresh }) {
             </select>
           </div>
         ) : (
-          <label>
-            Linked Student(s)
-            <select multiple value={invite.studentIds || []} onChange={(e) => setInvite({ ...invite, studentIds: selected(e) })} style={{ minHeight: "80px" }}>
-              {students.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+          <div>
+            <label>Linked Student(s)</label>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginTop: "0.25rem", marginBottom: "0.5rem" }}>
+              {(invite.studentIds || []).map((studentId) => {
+                const student = students.find((s) => s.id === studentId);
+                if (!student) return null;
+                return (
+                  <span key={studentId} className="pill" style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem", padding: "0.25rem 0.6rem" }}>
+                    {student.name}
+                    <button
+                      type="button"
+                      style={{ border: 0, background: "transparent", padding: 0, cursor: "pointer", color: "#ef4444", fontWeight: "bold", fontSize: "1rem" }}
+                      onClick={() => setInvite({ ...invite, studentIds: (invite.studentIds || []).filter((id) => id !== studentId) })}
+                    >
+                      ×
+                    </button>
+                  </span>
+                );
+              })}
+              {(!invite.studentIds || invite.studentIds.length === 0) && (
+                <span style={{ fontSize: "0.85rem", color: "#8caba1", fontStyle: "italic" }}>No linked students selected.</span>
+              )}
+            </div>
+            <select
+              value=""
+              onChange={(e) => {
+                if (e.target.value) setInvite({ ...invite, studentIds: Array.from(new Set([...(invite.studentIds || []), e.target.value])) });
+              }}
+              style={{ width: "auto", padding: "0.5rem 1rem", borderRadius: "10px" }}
+            >
+              <option value="">+ Add student...</option>
+              {students.filter((s) => !(invite.studentIds || []).includes(s.id)).map((item) => (
+                <option key={item.id} value={item.id}>{item.name}</option>
+              ))}
             </select>
-          </label>
+          </div>
         )}
         <button className="primary"><Send size={16} /> Create Invite Link</button>
       </form>
@@ -619,7 +649,8 @@ function DocumentReviewCard({ item, classes, approve }) {
 }
 
 function StudentDashboard({ snapshot, refresh }) {
-  const { user, assignments, submissions } = snapshot;
+  const { user, assignments, submissions, users } = snapshot;
+  const names = Object.fromEntries(users.map((item) => [item.id, item.name]));
   const [comment, setComment] = useState("");
   const [activeAsg, setActiveAsg] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -629,9 +660,9 @@ function StudentDashboard({ snapshot, refresh }) {
     let msg = "";
     if (status === "blocked") msg = "I am blocked on this assignment";
     else if (status === "in_progress") msg = "I have started working on this assignment";
-    else if (status === "submitted") msg = "Here is my completed reflection work";
+    else if (status === "submitted") msg = "I am submitting my work now";
     
-    await api("/api/messages", { assignmentId, text: msg });
+    await api("/api/messages", { assignmentId, text: msg, quickAction: true });
     setBusy(false);
     refresh();
   }
@@ -682,15 +713,26 @@ function StudentDashboard({ snapshot, refresh }) {
             
             <h4 style={{ marginTop: "1.5rem", borderBottom: "1px solid #e5f0ea", paddingBottom: "0.5rem" }}>Chat & Submission History</h4>
             <div className="list" style={{ maxHeight: "250px", overflowY: "auto", paddingRight: "0.5rem", gap: "0.5rem" }}>
-              {submissions.find((s) => s.assignmentId === activeAsg.id)?.history.map((h, i) => (
-                <div key={i} style={{ padding: "0.6rem", border: "1px solid #e5f0ea", borderRadius: "12px", background: "#fdfdfd" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", color: "#8caba1", marginBottom: "0.2rem" }}>
-                    <span>{h.actorId === user.id ? "You" : "Teacher/System"}</span>
-                    <span>{new Date(h.at).toLocaleTimeString()}</span>
+              {submissions.find((s) => s.assignmentId === activeAsg.id)?.history.map((h, i) => {
+                const isMe = h.actorId === user.id;
+                return (
+                  <div
+                    key={i}
+                    style={{
+                      padding: "0.6rem",
+                      borderRadius: "12px",
+                      background: isMe ? "#fdfdfd" : "#eaf4ef",
+                      border: isMe ? "1px solid #e5f0ea" : "1px solid #bfe0d1"
+                    }}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", color: isMe ? "#8caba1" : "#0f5f4f", marginBottom: "0.2rem" }}>
+                      <span>{isMe ? "You" : `${names[h.actorId] || "Teacher"} (feedback)`}</span>
+                      <span>{new Date(h.at).toLocaleTimeString()}</span>
+                    </div>
+                    <p style={{ margin: 0, fontSize: "0.85rem" }}>{h.text}</p>
                   </div>
-                  <p style={{ margin: 0, fontSize: "0.85rem" }}>{h.text}</p>
-                </div>
-              ))}
+                );
+              })}
               {(!submissions.find((s) => s.assignmentId === activeAsg.id)?.history?.length) && (
                 <p style={{ color: "#8caba1", fontSize: "0.85rem", textAlign: "center", padding: "1rem" }}>No activity logs yet.</p>
               )}
@@ -948,17 +990,52 @@ function Assignments({ snapshot, refresh, canManage = false }) {
 }
 
 function Submissions({ snapshot }) {
+  const [openId, setOpenId] = useState(null);
   const names = Object.fromEntries(snapshot.users.map((user) => [user.id, user.name]));
+  const assignmentTitles = Object.fromEntries((snapshot.assignments || []).map((item) => [item.id, item.title]));
   return (
     <section className="panel">
       <h3>Student status</h3>
       <div className="list compact">
-        {snapshot.submissions.map((item) => (
-          <div key={item.id}>
-            <strong>{names[item.studentId] || "Student"}</strong>
-            <Pill>{item.status}</Pill>
-          </div>
-        ))}
+        {snapshot.submissions.map((item) => {
+          const isOpen = openId === item.id;
+          const written = (item.history || []).filter((entry) => !entry.quickAction);
+          return (
+            <div key={item.id} style={{ flexDirection: "column", alignItems: "stretch", gap: "0.5rem", cursor: "pointer" }} onClick={() => setOpenId(isOpen ? null : item.id)}>
+              <div className="row" style={{ width: "100%" }}>
+                <strong>{names[item.studentId] || "Student"}</strong>
+                <span style={{ fontSize: "0.8rem", color: "#8caba1" }}>{assignmentTitles[item.assignmentId] || ""}</span>
+                <Pill>{item.status}</Pill>
+              </div>
+              {isOpen && (
+                <div style={{ display: "grid", gap: "0.4rem", paddingLeft: "0.25rem" }}>
+                  {written.length === 0 && <p style={{ color: "#8caba1", fontSize: "0.8rem", margin: 0 }}>The student hasn't written anything for this assignment yet.</p>}
+                  {written.map((entry, idx) => {
+                    const isStudent = entry.actorId === item.studentId;
+                    const author = names[entry.actorId] || (isStudent ? "Student" : "Teacher");
+                    return (
+                      <div
+                        key={idx}
+                        style={{
+                          padding: "0.5rem 0.75rem",
+                          borderRadius: "10px",
+                          background: isStudent ? "#fdfdfd" : "#eaf4ef",
+                          border: isStudent ? "1px solid #e5f0ea" : "1px solid #bfe0d1"
+                        }}
+                      >
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", color: isStudent ? "#8caba1" : "#0f5f4f", marginBottom: "0.2rem" }}>
+                          <span>{author} · {entry.intent?.replace(/_/g, " ")}</span>
+                          <span>{new Date(entry.at).toLocaleString()}</span>
+                        </div>
+                        <p style={{ margin: 0, fontSize: "0.85rem" }}>{entry.text}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })}
         {snapshot.submissions.length === 0 && <p style={{ color: "#5d736b", padding: "1rem", textAlign: "center" }}>No student statuses available.</p>}
       </div>
     </section>
@@ -997,16 +1074,20 @@ async function api(path, payload, method = "POST") {
     headers["Content-Type"] = "application/json";
     body = JSON.stringify(payload);
   }
-  const response = await fetch(path, {
-    method,
-    headers,
-    body
-  });
-  return response.json();
-}
-
-function selected(event) {
-  return Array.from(event.target.selectedOptions).map((option) => option.value);
+  try {
+    const response = await fetch(path, { method, headers, body });
+    const text = await response.text();
+    let data = {};
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch {
+      data = {};
+    }
+    if (!response.ok && !data.error) data.error = `Request failed (${response.status})`;
+    return data;
+  } catch (error) {
+    return { error: "Could not reach the server. Check that the API is running and try again." };
+  }
 }
 
 function parseJson(value) {
