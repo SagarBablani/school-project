@@ -16,6 +16,7 @@ A focused take-home implementation for the SIM senior engineering assignment. It
 ## Run Locally
 
 ```bash
+Build Node Version 22.11.0
 npm install
 npm run api
 npm run dev
